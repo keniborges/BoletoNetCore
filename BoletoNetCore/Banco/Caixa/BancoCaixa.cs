@@ -32,7 +32,7 @@ namespace BoletoNetCore
                 if (String.IsNullOrEmpty(Beneficiario.CodigoDV))
                     throw new Exception($"Dígito do código do beneficiário ({codigoBeneficiario}) não foi informado.");
 
-                Beneficiario.CodigoFormatado = $"{contaBancaria.Agencia} / {codigoBeneficiario}-{Beneficiario.CodigoDV}";
+                Beneficiario.CodigoFormatado = $"{contaBancaria.Agencia} / {codigoBeneficiario.PadLeft(7, '0')}-{Beneficiario.CodigoDV}";
             }
             else if (codigoBeneficiario.Length == 7)
             {
