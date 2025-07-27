@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using static System.String;
 
 namespace BoletoNetCore
@@ -19,7 +16,7 @@ namespace BoletoNetCore
                 tregistroEdi.Adicionar(TTiposDadoEDI.ediAlphaAliEsquerda_____, 9, 9, 0, Empty, ' ');
                 tregistroEdi.Adicionar(TTiposDadoEDI.ediNumericoSemSeparador_, 18, 1, 0, Beneficiario.TipoCPFCNPJ("0"), '0');
                 tregistroEdi.Adicionar(TTiposDadoEDI.ediNumericoSemSeparador_, 19, 14, 0, Beneficiario.CPFCNPJ, '0');
-                tregistroEdi.Adicionar(TTiposDadoEDI.ediAlphaAliEsquerda_____, 33, 20, 0, Beneficiario.Codigo, ' ');
+                tregistroEdi.Adicionar(TTiposDadoEDI.ediAlphaAliEsquerda_____, 33, 20, 0, Beneficiario.ContaBancaria.CodigoConvenio, ' ');
                 tregistroEdi.Adicionar(TTiposDadoEDI.ediNumericoSemSeparador_, 53, 5, 0, Beneficiario.ContaBancaria.Agencia, '0');
                 tregistroEdi.Adicionar(TTiposDadoEDI.ediAlphaAliEsquerda_____, 58, 1, 0, Beneficiario.ContaBancaria.DigitoAgencia, ' ');
                 tregistroEdi.Adicionar(TTiposDadoEDI.ediNumericoSemSeparador_, 59, 12, 0, Beneficiario.ContaBancaria.Conta, '0');
@@ -166,7 +163,8 @@ namespace BoletoNetCore
                 tregistroEdi.Adicionar(TTiposDadoEDI.ediNumericoSemSeparador_, 24, 12, 0, boleto.Banco.Beneficiario.ContaBancaria.Conta, '0');
                 tregistroEdi.Adicionar(TTiposDadoEDI.ediAlphaAliEsquerda_____, 36, 1, 0, boleto.Banco.Beneficiario.ContaBancaria.DigitoConta, ' ');
                 tregistroEdi.Adicionar(TTiposDadoEDI.ediAlphaAliEsquerda_____, 37, 1, 0, Empty, ' ');
-                tregistroEdi.Adicionar(TTiposDadoEDI.ediNumericoSemSeparador_, 37, 17, 0, Utils.FormatCode(boleto.NossoNumero, 17), '0');
+                tregistroEdi.Adicionar(TTiposDadoEDI.ediNumericoSemSeparador_, 37, 8, 0, Utils.FormatCode(boleto.Banco.Beneficiario.Codigo, 8), '0');
+                tregistroEdi.Adicionar(TTiposDadoEDI.ediNumericoSemSeparador_, 37, 9, 0, Utils.FormatCode(boleto.NossoNumero, 9), '0');
                 tregistroEdi.Adicionar(TTiposDadoEDI.ediAlphaAliEsquerda_____, 55, 3, 0, Empty, ' ');
                 tregistroEdi.Adicionar(TTiposDadoEDI.ediNumericoSemSeparador_, 58, 1, 0, boleto.Carteira, '0');
                 tregistroEdi.Adicionar(TTiposDadoEDI.ediNumericoSemSeparador_, 59, 1, 0, "1", '0');
@@ -181,7 +179,8 @@ namespace BoletoNetCore
                 tregistroEdi.Adicionar(TTiposDadoEDI.ediNumericoSemSeparador_, 107, 2, 0, (int)boleto.EspecieDocumento, '0');
                 tregistroEdi.Adicionar(TTiposDadoEDI.ediAlphaAliEsquerda_____, 109, 1, 0, boleto.Aceite, ' ');
                 tregistroEdi.Adicionar(TTiposDadoEDI.ediDataDDMMAAAA_________, 110, 8, 0, boleto.DataEmissao, '0');
-                if (boleto.ValorJurosDia == 0M)
+
+                if (boleto.ValorJurosDia == 0M && boleto.PercentualJurosDia == 0M)
                 {
                     tregistroEdi.Adicionar(TTiposDadoEDI.ediNumericoSemSeparador_, 118, 1, 0, "3", '0');
                     tregistroEdi.Adicionar(TTiposDadoEDI.ediNumericoSemSeparador_, 119, 8, 0, "0", '0');
@@ -189,10 +188,24 @@ namespace BoletoNetCore
                 }
                 else
                 {
-                    tregistroEdi.Adicionar(TTiposDadoEDI.ediNumericoSemSeparador_, 118, 1, 0, "1", '0');
-                    tregistroEdi.Adicionar(TTiposDadoEDI.ediDataDDMMAAAA_________, 119, 8, 0, boleto.DataJuros, '0');
-                    tregistroEdi.Adicionar(TTiposDadoEDI.ediNumericoSemSeparador_, sbyte.MaxValue, 15, 2, boleto.ValorJurosDia, '0');
+                    if (boleto.ValorJurosDia > 0)
+                    {
+                        tregistroEdi.Adicionar(TTiposDadoEDI.ediNumericoSemSeparador_, 118, 1, 0, "1", '0');
+                        tregistroEdi.Adicionar(TTiposDadoEDI.ediDataDDMMAAAA_________, 119, 8, 0, boleto.DataJuros, '0');
+                        tregistroEdi.Adicionar(TTiposDadoEDI.ediNumericoSemSeparador_, sbyte.MaxValue, 15, 2, boleto.ValorJurosDia, '0');
+                    }
+                    else if (boleto.PercentualJurosDia > 0)
+                    {
+                        decimal multiplicadorCasasDecimais = (decimal)Math.Pow(10, 2);
+
+                        var percentualJurosMensal = Math.Round(multiplicadorCasasDecimais * (boleto.PercentualJurosDia * 30)) / multiplicadorCasasDecimais;
+
+                        tregistroEdi.Adicionar(TTiposDadoEDI.ediNumericoSemSeparador_, 118, 1, 0, "2", '0');
+                        tregistroEdi.Adicionar(TTiposDadoEDI.ediDataDDMMAAAA_________, 119, 8, 0, boleto.DataJuros, '0');
+                        tregistroEdi.Adicionar(TTiposDadoEDI.ediNumericoSemSeparador_, sbyte.MaxValue, 15, 2, percentualJurosMensal, '0');
+                    }
                 }
+
                 if (boleto.ValorDesconto == 0M)
                 {
                     tregistroEdi.Adicionar(TTiposDadoEDI.ediNumericoSemSeparador_, 142, 1, 0, "0", '0');

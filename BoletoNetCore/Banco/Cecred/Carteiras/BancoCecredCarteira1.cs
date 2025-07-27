@@ -14,7 +14,7 @@ namespace BoletoNetCore
         public string FormataCodigoBarraCampoLivre(Boleto boleto)
         {
             string parte1 = string.Format("{0}{1}{2}",
-                 Utils.FormatCode(boleto.Banco.Beneficiario.Codigo, 6),
+                 Utils.FormatCode(boleto.Banco.Beneficiario.ContaBancaria.CodigoConvenio, 6),
                  boleto.NossoNumero,
                  Utils.FormatCode(boleto.Carteira, 2));
             return parte1;
