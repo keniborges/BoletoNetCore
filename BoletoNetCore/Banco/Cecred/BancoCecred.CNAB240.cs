@@ -163,8 +163,7 @@ namespace BoletoNetCore
                 tregistroEdi.Adicionar(TTiposDadoEDI.ediNumericoSemSeparador_, 24, 12, 0, boleto.Banco.Beneficiario.ContaBancaria.Conta, '0');
                 tregistroEdi.Adicionar(TTiposDadoEDI.ediAlphaAliEsquerda_____, 36, 1, 0, boleto.Banco.Beneficiario.ContaBancaria.DigitoConta, ' ');
                 tregistroEdi.Adicionar(TTiposDadoEDI.ediAlphaAliEsquerda_____, 37, 1, 0, Empty, ' ');
-                tregistroEdi.Adicionar(TTiposDadoEDI.ediNumericoSemSeparador_, 37, 8, 0, Utils.FormatCode(boleto.Banco.Beneficiario.Codigo, 8), '0');
-                tregistroEdi.Adicionar(TTiposDadoEDI.ediNumericoSemSeparador_, 37, 9, 0, Utils.FormatCode(boleto.NossoNumero, 9), '0');
+                tregistroEdi.Adicionar(TTiposDadoEDI.ediNumericoSemSeparador_, 37, 17, 0, Utils.FormatCode(boleto.NossoNumero, 17), '0');
                 tregistroEdi.Adicionar(TTiposDadoEDI.ediAlphaAliEsquerda_____, 55, 3, 0, Empty, ' ');
                 tregistroEdi.Adicionar(TTiposDadoEDI.ediNumericoSemSeparador_, 58, 1, 0, boleto.Carteira, '0');
                 tregistroEdi.Adicionar(TTiposDadoEDI.ediNumericoSemSeparador_, 59, 1, 0, "1", '0');
